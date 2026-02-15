@@ -18,8 +18,9 @@
     const filter = ref('all');
 
     const filteredTodos = computed(() => {
-        if (filter.value === 'active') return todos.value.filter(t => !t.completed)
-        if (filter.value === 'done') return todos.value.filter(t => t.completed)
+        if (filter.value === 'all') return todoList.value
+        if (filter.value === 'active') return todoList.value.filter(t => !t.completed)
+        if (filter.value === 'done') return todoList.value.filter(t => t.completed)
         return todos.value
     });
 
@@ -45,7 +46,7 @@
         <div class="taskItems">
             <ul>
                 <TodoItem
-                    v-for="t in todoList"
+                    v-for="t in filteredTodos"
                     :key="t.id"
                     :todo="t"
                 />
