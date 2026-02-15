@@ -24,9 +24,9 @@
         return todos.value
     });
 
-    // const total = computed(() => todos.value.length);
-    // const completed = computed(() => todos.value.filter(t => t.completed).length);
-    // const pending = computed(() => total.value - completed.value);
+    const total = computed(() => todoList.value.length);
+    const completed = computed(() => todoList.value.filter(t => t.completed).length);
+    const pending = computed(() => total.value - completed.value);
 </script>
 
 <template>
