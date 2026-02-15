@@ -1,14 +1,19 @@
 <script setup>
-    import { ref, computed } from 'vue';
+    import { ref, computed, onMounted } from 'vue';
     import TodoItem from './TodoItem.vue';
     import TodoFilters from './TodoFilters.vue';
     import TodoStats from './TodoStats.vue';
     import TodoForm from './TodoForm.vue';
 
-    const todos = ref([
-        { id: 1, title: 'Learn Vue JS', completed: false },
-        { id: 2, title: 'Watch Netflix', completed: false },
-    ]);
+    import { useTodoStore } from '@/stores/useTodoStore';
+    import { storeToRefs } from 'pinia';
+
+    const store = useTodoStore();
+    const { todoList } = storeToRefs(store);
+
+    onMounted(() => {
+        store.init()
+    });
 
     const filter = ref('all');
 
@@ -18,9 +23,9 @@
         return todos.value
     });
 
-    const total = computed(() => todos.value.length);
-    const completed = computed(() => todos.value.filter(t => t.completed).length);
-    const pending = computed(() => total.value - completed.value);
+    // const total = computed(() => todos.value.length);
+    // const completed = computed(() => todos.value.filter(t => t.completed).length);
+    // const pending = computed(() => total.value - completed.value);
 </script>
 
 <template>
@@ -40,7 +45,7 @@
         <div class="taskItems">
             <ul>
                 <TodoItem
-                    v-for="t in filteredTodos"
+                    v-for="t in todoList"
                     :key="t.id"
                     :todo="t"
                 />
