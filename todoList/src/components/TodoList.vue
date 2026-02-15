@@ -7,6 +7,7 @@
 
     import { useTodoStore } from '@/stores/useTodoStore';
     import { storeToRefs } from 'pinia';
+    import axios from 'axios';
 
     const store = useTodoStore();
     const { todoList } = storeToRefs(store);
@@ -21,12 +22,29 @@
         if (filter.value === 'all') return todoList.value
         if (filter.value === 'active') return todoList.value.filter(t => !t.completed)
         if (filter.value === 'done') return todoList.value.filter(t => t.completed)
-        return todos.value
+        return todoList.value
     });
 
     const total = computed(() => todoList.value.length);
     const completed = computed(() => todoList.value.filter(t => t.completed).length);
     const pending = computed(() => total.value - completed.value);
+
+    const page = ref(1);
+    const loading = ref(false);
+
+    const fetchMoreItems = async () => {
+        if (loading.value) return
+        loading.value = true
+
+        const res = await axios.get(
+            `https://jsonplaceholder.typicode.com/todos?_limit=20&_page=${page.value}`
+        )
+
+        todoList.value.push(...res.data)
+
+        loading.value = false
+        page.value++
+    }
 </script>
 
 <template>
@@ -51,6 +69,10 @@
                     :todo="t"
                 />
             </ul>
-        </div>      
+        </div>
+
+        <div class="clearBtns">
+            <button @click="fetchMoreItems" :disabled="loading">Load More</button>
+        </div>
     </div>
 </template>
