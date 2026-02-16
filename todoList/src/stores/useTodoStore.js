@@ -18,7 +18,7 @@ export const useTodoStore = defineStore('todoList', {
             await this.fetchFromAPI();
         },
         async fetchFromAPI() {
-            const res = await axios.get('https://jsonplaceholder.typicode.com/todos?_limit=20')
+            const res = await axios.get('https://jsonplaceholder.typicode.com/todos')
 
             this.todoList = res.data.map(t => ({ 
                 title: t.title, 

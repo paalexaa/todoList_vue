@@ -29,7 +29,7 @@
 
     const displayedCount = ref(20)
 
-    const fetchMoreItems = computed(() => {
+    const displayedTodos = computed(() => {
         return filteredTodos.value.slice(0, displayedCount.value)
     });
 
@@ -59,7 +59,7 @@
         <div class="taskItems">
             <ul>
                 <TodoItem
-                    v-for="t in fetchMoreItems"
+                    v-for="t in displayedTodos"
                     :key="t.id"
                     :todo="t"
                 />
