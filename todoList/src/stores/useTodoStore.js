@@ -1,3 +1,4 @@
+import axios from "axios";
 import { defineStore } from "pinia";
 
 export const useTodoStore = defineStore('todoList', {
@@ -6,23 +7,42 @@ export const useTodoStore = defineStore('todoList', {
         id: 0,
     }),
     actions: {
-        init() {
+        async init() {
             const saved = localStorage.getItem('todoList')
             if (saved) {
                 this.todoList = JSON.parse(saved)
-
                 const maxId = this.todoList.reduce((m, t) => Math.max(m, t.id), -1)
-                this.id = maxId + 1
-            }
+                this.id = maxId + 1 
+                return
+            } 
+            await this.fetchFromAPI();
+        },
+        async fetchFromAPI() {
+            const res = await axios.get('https://jsonplaceholder.typicode.com/todos?_limit=20')
+
+            this.todoList = res.data.map(t => ({ 
+                title: t.title, 
+                id: t.id, 
+                completed: t.completed,
+                createdAt: Date.now() }))
+
+            const maxId = this.todoList.reduce((m, t) => Math.max(m, t.id), -1)
+            this.id = maxId + 1
+
+            this.persist()
+
         },
         persist() {
             localStorage.setItem('todoList', JSON.stringify(this.todoList))
         },
         addTask(title) {
-            this.todoList.push({ 
+            if (!title || title.trim() === '') return
+
+            this.todoList.unshift({ 
                 title: title, 
-                id: this.id++, 
-                completed: false })
+                id: Date.now(), 
+                completed: false,
+                createdAt: Date.now() })
             this.persist()
         },
         editTask(titleID, newVal) {

@@ -7,7 +7,6 @@
 
     import { useTodoStore } from '@/stores/useTodoStore';
     import { storeToRefs } from 'pinia';
-    import axios from 'axios';
 
     const store = useTodoStore();
     const { todoList } = storeToRefs(store);
@@ -17,7 +16,6 @@
     });
 
     const filter = ref('all');
-
     const filteredTodos = computed(() => {
         if (filter.value === 'all') return todoList.value
         if (filter.value === 'active') return todoList.value.filter(t => !t.completed)
@@ -29,22 +27,19 @@
     const completed = computed(() => todoList.value.filter(t => t.completed).length);
     const pending = computed(() => total.value - completed.value);
 
-    const page = ref(1);
-    const loading = ref(false);
+    const displayedCount = ref(20)
 
-    const fetchMoreItems = async () => {
-        if (loading.value) return
-        loading.value = true
+    const fetchMoreItems = computed(() => {
+        return filteredTodos.value.slice(0, displayedCount.value)
+    });
 
-        const res = await axios.get(
-            `https://jsonplaceholder.typicode.com/todos?_limit=20&_page=${page.value}`
-        )
+    const hasMore = computed(() => {
+        return filteredTodos.value.length > displayedCount.value
+    });
 
-        todoList.value.push(...res.data)
-
-        loading.value = false
-        page.value++
-    }
+    function loadMore() {
+        displayedCount.value += 20
+    };
 </script>
 
 <template>
@@ -64,15 +59,15 @@
         <div class="taskItems">
             <ul>
                 <TodoItem
-                    v-for="t in filteredTodos"
+                    v-for="t in fetchMoreItems"
                     :key="t.id"
                     :todo="t"
                 />
             </ul>
         </div>
 
-        <div class="clearBtns">
-            <button @click="fetchMoreItems" :disabled="loading">Load More</button>
+        <div class="clearBtns" v-if="hasMore">
+            <button @click="loadMore" type="button">Load More</button>
         </div>
     </div>
 </template>
