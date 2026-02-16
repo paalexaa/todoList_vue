@@ -2,6 +2,8 @@
 
 Simple todo list application built with Vue 3 and Pinia for a frontend assignment.
 
+**Live Demo:** https://todofinax.netlify.app/
+
 ## Technologies Used
 
 - **Vue 3** - Composition API
